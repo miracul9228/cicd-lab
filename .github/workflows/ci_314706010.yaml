@@ -1,11 +1,20 @@
 name: Homework CI Pipeline
 
 on:
-  push: # 作業要求：在 push 時自動執行
+  push:
+    branches: [ main ]
 
 jobs:
   check-and-test:
     runs-on: ubuntu-latest
+    
+    # CRITICAL: This grants the necessary permissions to publish the test results
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -18,21 +27,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 1. TypeScript 型別檢查
       - name: TypeScript typecheck
         run: npm run typecheck
 
-      # 2. Prettier 格式檢查
       - name: Prettier check
         run: npm run format:check
 
-      # 3. 執行測試
+      # Install the Jest JUnit reporter and run tests to output the XML
       - name: Run Tests
-        run: npm test
+        run: |
+          npm install jest-junit --no-save
+          JEST_JUNIT_OUTPUT_DIR="." JEST_JUNIT_OUTPUT_NAME="junit.xml" npx jest --reporters=default --reporters=jest-junit
 
-      # 4. 將測試結果顯示於 GitHub Actions 頁面
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always() && env.ACT != 'true'
+        if: ${{ always() && env.ACT != 'true' }}
         with:
-          files: '**/junit.xml'
+          files: "**/junit.xml"
