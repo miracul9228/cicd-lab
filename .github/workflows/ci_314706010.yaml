@@ -2,12 +2,12 @@ name: Homework CI Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   check-and-test:
     runs-on: ubuntu-latest
-    
+
     # CRITICAL: This grants the necessary permissions to publish the test results
     permissions:
       contents: read
@@ -43,4 +43,4 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: ${{ always() && env.ACT != 'true' }}
         with:
-          files: "**/junit.xml"
+          files: '**/junit.xml'
