@@ -1,0 +1,38 @@
+name: Homework CI Pipeline
+
+on:
+  push: # 作業要求：在 push 時自動執行
+
+jobs:
+  check-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      # 1. TypeScript 型別檢查
+      - name: TypeScript typecheck
+        run: npm run typecheck
+
+      # 2. Prettier 格式檢查
+      - name: Prettier check
+        run: npm run format:check
+
+      # 3. 執行測試
+      - name: Run Tests
+        run: npm test
+
+      # 4. 將測試結果顯示於 GitHub Actions 頁面
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always() && env.ACT != 'true'
+        with:
+          files: '**/junit.xml'
