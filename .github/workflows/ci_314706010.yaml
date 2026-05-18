@@ -35,9 +35,7 @@ jobs:
 
       # Install the Jest JUnit reporter and run tests to output the XML
       - name: Run Tests
-        run: |
-          npm install jest-junit --no-save
-          JEST_JUNIT_OUTPUT_DIR="." JEST_JUNIT_OUTPUT_NAME="junit.xml" npx jest --reporters=default --reporters=jest-junit
+        run: npx vitest run --reporter=default --reporter=junit --outputFile=junit.xml
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
